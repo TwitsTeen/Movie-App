@@ -1,6 +1,3 @@
-import SearchBar from "@/components/SearchBar";
-import { icons } from "@/constants/icons";
-import { images } from "@/constants/images";
 import {
   ActivityIndicator,
   FlatList,
@@ -9,31 +6,32 @@ import {
   Text,
   View,
 } from "react-native";
+import React, { useEffect, useState } from "react";
+import { fetchTvShows } from "@/services/api";
 import useFetch from "@/services/useFetch";
-import { fetchMovies } from "@/services/api";
-import MovieCard from "@/components/MovieCard";
-import { useEffect, useState } from "react";
+import { images } from "@/constants/images";
+import SearchBar from "@/components/SearchBar";
+import { useRouter } from "expo-router";
+import TvShowCard from "@/components/TvShowCard";
 
-export default function Index() {
+const Tv: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
   const {
-    data: movies,
-    loading: moviesLoading,
-    error: moviesError,
-    refetch: loadMovies,
-  } = useFetch(() => fetchMovies({ query: searchQuery }));
+    data: tvShows,
+    loading: tvShowsLoading,
+    error: tvShowsError,
+    refetch: loadTvShows,
+  } = useFetch(() => fetchTvShows({ query: searchQuery }));
 
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
       if (searchQuery.trim()) {
-        await loadMovies();
+        await loadTvShows();
       }
     }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
-
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
@@ -45,29 +43,28 @@ export default function Index() {
           paddingBottom: 10,
         }}
       >
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
-        {moviesLoading ? (
+        {tvShowsLoading ? (
           <ActivityIndicator
             size="large"
             color="0000ff"
             className="mt-10 self-center"
           />
-        ) : moviesError ? (
-          <Text>Error: {moviesError?.message}</Text>
+        ) : tvShowsError ? (
+          <Text>Error: {tvShowsError?.message}</Text>
         ) : (
           <View className="flex-1 mt-6">
             <SearchBar
-              placeholder="Search for a movie"
+              placeholder="Search for a tv show"
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}
             ></SearchBar>
             <>
               <Text className="text-lg text-white font-bold mt-5 mb-3">
-                Latest Movies
+                Latest Tv Shows
               </Text>
               <FlatList
-                data={movies}
-                renderItem={({ item }) => <MovieCard {...item} />}
+                data={tvShows}
+                renderItem={({ item }) => <TvShowCard {...item} />}
                 keyExtractor={(item) => item.id}
                 numColumns={3}
                 columnWrapperStyle={{
@@ -85,4 +82,6 @@ export default function Index() {
       </ScrollView>
     </View>
   );
-}
+};
+
+export default Tv;
