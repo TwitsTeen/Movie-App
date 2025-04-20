@@ -35,6 +35,11 @@ const Tv: React.FC = () => {
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
+      <SearchBar
+        placeholder="Search for a tv show"
+        value={searchQuery}
+        onChangeText={(text) => setSearchQuery(text)}
+      ></SearchBar>
       <ScrollView
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
@@ -53,11 +58,6 @@ const Tv: React.FC = () => {
           <Text>Error: {tvShowsError?.message}</Text>
         ) : (
           <View className="flex-1 mt-6">
-            <SearchBar
-              placeholder="Search for a tv show"
-              value={searchQuery}
-              onChangeText={(text) => setSearchQuery(text)}
-            ></SearchBar>
             <>
               <Text className="text-lg text-white font-bold mt-5 mb-3">
                 Latest Tv Shows

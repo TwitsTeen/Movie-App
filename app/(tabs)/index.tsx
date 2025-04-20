@@ -37,6 +37,11 @@ export default function Index() {
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
+      <SearchBar
+        placeholder="Search for a movie"
+        value={searchQuery}
+        onChangeText={(text) => setSearchQuery(text)}
+      ></SearchBar>
       <ScrollView
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
@@ -45,7 +50,6 @@ export default function Index() {
           paddingBottom: 10,
         }}
       >
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
         {moviesLoading ? (
           <ActivityIndicator
             size="large"
@@ -56,11 +60,6 @@ export default function Index() {
           <Text>Error: {moviesError?.message}</Text>
         ) : (
           <View className="flex-1 mt-6">
-            <SearchBar
-              placeholder="Search for a movie"
-              value={searchQuery}
-              onChangeText={(text) => setSearchQuery(text)}
-            ></SearchBar>
             <>
               <Text className="text-lg text-white font-bold mt-5 mb-3">
                 Latest Movies

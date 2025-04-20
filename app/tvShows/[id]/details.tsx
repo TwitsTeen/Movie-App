@@ -5,10 +5,28 @@ import useFetch from "@/services/useFetch";
 import { fetchTvShowDetails } from "@/services/api";
 import { Picker } from "@react-native-picker/picker";
 import { icons } from "@/constants/icons";
+import {
+  isTvShowFavorite,
+  switchTvShowSavedStatus,
+} from "@/services/localStorage";
 
 interface MovieInfoProps {
   label: string;
   value?: string | number | null;
+}
+
+function convertToTvShow(details: TvShowDetails): TvShow {
+  return {
+    backdrop_path: details.backdrop_path,
+    id: details.id,
+    name: details.name,
+    orginal_name: details.original_name,
+    overview: details.overview,
+    poster_path: details.poster_path,
+    media_type: "tv",
+    first_air_date: details.first_air_date,
+    vote_average: details.vote_average,
+  };
 }
 
 const TvShowInfo = ({ label, value }: MovieInfoProps) => (
@@ -26,6 +44,7 @@ const TvShowDetails = () => {
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [numberOfEpisodes, setNumberOfEpisodes] = useState(1);
+  const [isTvShowSaved, setIsTvShowSaved] = useState<Boolean>(false);
 
   const {
     data: tvShow,
@@ -35,6 +54,11 @@ const TvShowDetails = () => {
 
   useEffect(() => {
     fetchTvShowDetails(id as string);
+    const checkMovieSaved = async () => {
+      const isSaved = await isTvShowFavorite(convertToTvShow(tvShow!));
+      setIsTvShowSaved(isSaved);
+    };
+    checkMovieSaved();
   }, []);
 
   useEffect(() => {
@@ -45,6 +69,11 @@ const TvShowDetails = () => {
     }
     setSelectedEpisode(1);
   }, [selectedSeason, tvShow]);
+
+  function switchSavedState(): void {
+    setIsTvShowSaved((prev) => !prev);
+    switchTvShowSavedStatus(convertToTvShow(tvShow!));
+  }
 
   return (
     <View className="flex-1 bg-primary">
@@ -59,6 +88,12 @@ const TvShowDetails = () => {
       <View className="flex-col items-start justify-center mt-5 px-5">
         <View className="flex-row justify-between items-center w-full">
           <Text className="text-white font-bold text-xl">{tvShow?.name}</Text>
+          <TouchableOpacity onPress={() => switchSavedState()}>
+            <Image
+              source={icons.star}
+              style={{ tintColor: isTvShowSaved ? "gold" : "white" }}
+            />
+          </TouchableOpacity>
         </View>
 
         <View className="flex-row items-center gap-x-1 mt-2">

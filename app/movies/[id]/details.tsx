@@ -5,7 +5,10 @@ import { WebView } from "react-native-webview";
 import useFetch from "@/services/useFetch";
 import { fetchMovieDetails } from "@/services/api";
 import { icons } from "@/constants/icons";
-import { isMovieFavorite, switchSavedStatus } from "@/services/localStorage";
+import {
+  isMovieFavorite,
+  switchMovieSavedStatus,
+} from "@/services/localStorage";
 
 interface MovieInfoProps {
   label: string;
@@ -67,7 +70,7 @@ const MovieDetails = () => {
   const router = useRouter();
 
   function switchSavedState() {
-    switchSavedStatus(movie!);
+    switchMovieSavedStatus(movie!);
     setIsMovieSaved(!isMovieSaved);
   }
 
